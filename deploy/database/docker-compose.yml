@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  pgdb:
+    container_name: common_database
+    image: 'crunchydata/crunchy-postgres:centos7-10.9-2.4.1'
+    env_file:
+      - pg-env.list
+    volumes:
+      - db_data:/pgdata
+      - ./scripts:/home/temp/scripts
+    ports:
+      - 5432:5432
+    restart: always
+volumes:
+  db_data:
