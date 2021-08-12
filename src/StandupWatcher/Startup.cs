@@ -1,9 +1,12 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 using StandupWatcher.Common;
 using StandupWatcher.Common.Types;
+using StandupWatcher.DataAccess;
+using StandupWatcher.DataAccess.Repositories;
 
 namespace StandupWatcher
 {
@@ -15,9 +18,11 @@ namespace StandupWatcher
 
 			services.BindConfiguration<WorkersConfiguration>(_configuration, "workers");
 
-			new WorkerInstaller(services)
-				.InstallWorkers()
-				.Run();
+			services.AddDbContext<DatabaseContext>(
+				options => options.UseNpgsql(_configuration.GetConnectionString("watcherDatabase")));
+			services.AddTransient(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+			new WorkerInstaller(services).InstallWorkers().Run();
 		}
 
 		private static IConfiguration _configuration;

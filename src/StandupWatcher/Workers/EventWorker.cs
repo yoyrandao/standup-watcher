@@ -1,19 +1,19 @@
-using System;
-
+using StandupWatcher.DataAccess.Models;
+using StandupWatcher.DataAccess.Repositories;
 using StandupWatcher.Workers.Payload;
 
 namespace StandupWatcher.Workers
 {
 	public class EventWorker : BaseWorker<EventWorkerPayload>
 	{
-		public EventWorker(EventWorkerPayload payload) : base(payload)
+		public EventWorker(EventWorkerPayload payload, IGenericRepository<Event> eventRepository)
+			: base(payload)
 		{
-			Console.WriteLine("asda");
+			_eventRepository = eventRepository;
 		}
 
-		protected override void Process()
-		{
-			Console.WriteLine("hello");
-		}
+		protected override void Process() { }
+
+		private readonly IGenericRepository<Event> _eventRepository;
 	}
 }

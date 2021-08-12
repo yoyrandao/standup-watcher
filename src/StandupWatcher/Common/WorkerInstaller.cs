@@ -85,6 +85,7 @@ namespace StandupWatcher.Common
 		}
 
 		private readonly IServiceCollection _services;
+
 		private readonly List<Type> _workersToActivate;
 	}
 }

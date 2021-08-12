@@ -1,4 +1,6 @@
-﻿workers:
+﻿connectionStrings:
+  watcherDatabase: Server=localhost;Port=5432;Database=watcher_db;Username=postgres;Password=@VWOn8MW
+workers:
   workerSettings:
     - name: eventWorker
       interval: 00:00:01
