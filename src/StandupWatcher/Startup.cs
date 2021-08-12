@@ -7,6 +7,7 @@ using StandupWatcher.Common;
 using StandupWatcher.Common.Types;
 using StandupWatcher.DataAccess;
 using StandupWatcher.DataAccess.Repositories;
+using StandupWatcher.Processing;
 
 namespace StandupWatcher
 {
@@ -17,12 +18,30 @@ namespace StandupWatcher
 			_configuration = context.Configuration;
 
 			services.BindConfiguration<WorkersConfiguration>(_configuration, "workers");
+			services.BindConfiguration<ScannerConfiguration>(_configuration, "scanner");
 
+			ConfigureLogic(services);
+			ConfigureDatabase(services);
+
+			new WorkerInstaller(services).Install().Run();
+		}
+
+		private static void ConfigureDatabase(IServiceCollection services)
+		{
 			services.AddDbContext<DatabaseContext>(
 				options => options.UseNpgsql(_configuration.GetConnectionString("watcherDatabase")));
-			services.AddTransient(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
-			new WorkerInstaller(services).InstallWorkers().Run();
+			services.AddTransient(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+		}
+
+		private static void ConfigureLogic(IServiceCollection services)
+		{
+			services.AddTransient<IContentProvider, ContentProvider>();
+
+			services.AddTransient<IStoreScanner, StoreScanner>(
+				x => new StoreScanner(
+					x.GetService<IContentProvider>(),
+					x.GetService<ScannerConfiguration>()?.StoreUrl));
 		}
 
 		private static IConfiguration _configuration;

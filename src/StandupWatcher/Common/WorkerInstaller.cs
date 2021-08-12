@@ -19,7 +19,7 @@ namespace StandupWatcher.Common
 			_workersToActivate = new List<Type>();
 		}
 
-		public WorkerInstaller InstallWorkers()
+		public WorkerInstaller Install()
 		{
 			var serviceProvider = _services.BuildServiceProvider();
 			var workersConfiguration = serviceProvider.GetService<WorkersConfiguration>();

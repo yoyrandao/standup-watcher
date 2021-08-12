@@ -1,6 +1,10 @@
 ﻿connectionStrings:
-  watcherDatabase: Server=localhost;Port=5432;Database=watcher_db;Username=postgres;Password=@VWOn8MW
+  watcherDatabase: 'Server=localhost;Port=5432;Database=watcher_db;Username=postgres;Password=@VWOn8MW'
+
+scanner:
+  storeUrl: 'https://standupstore.ru'
+
 workers:
   workerSettings:
-    - name: eventWorker
+    - name: 'eventWorker'
       interval: 00:00:01

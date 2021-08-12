@@ -55,7 +55,6 @@ namespace StandupWatcher.DataAccess.Repositories
 		#endregion
 
 		private readonly DbSet<T> _collection;
-
 		private readonly DatabaseContext _context;
 	}
 }
