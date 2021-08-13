@@ -69,6 +69,7 @@ namespace StandupWatcher.Common
 			return workerType switch
 			{
 				WorkerTypes.EventWorkerName => (typeof(EventWorkerPayload), typeof(EventWorker)),
+				WorkerTypes.NotificationWorkerName => (typeof(NotificationWorkerPayload), typeof(NotificationWorker)),
 
 				_ => throw new ArgumentOutOfRangeException(nameof(workerType), workerType, null)
 			};
@@ -79,6 +80,7 @@ namespace StandupWatcher.Common
 			return workerType switch
 			{
 				WorkerTypes.EventWorkerName => typeof(BaseWorker<EventWorkerPayload>),
+				WorkerTypes.NotificationWorkerName => typeof(BaseWorker<NotificationWorkerPayload>),
 
 				_ => throw new ArgumentOutOfRangeException(nameof(workerType), workerType, null)
 			};

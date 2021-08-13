@@ -4,7 +4,13 @@
 scanner:
   storeUrl: 'https://standupstore.ru'
 
+bot:
+  accessToken: ''
+
 workers:
   workerSettings:
     - name: 'eventWorker'
+      interval: 00:00:01
+
+    - name: 'notificationWorker'
       interval: 00:00:01

@@ -48,10 +48,9 @@ namespace StandupWatcher.Workers
 
 			foreach (var @event in difference)
 			{
-				@event.CreationTimestamp = DateTime.Now;
-				@event.ModificationTimestamp = DateTime.Now;
+				var now = DateTime.Now;
 
-				_eventRepository.Add(@event);
+				_eventRepository.Add(@event with { CreationTimestamp = now, ModificationTimestamp = now });
 			}
 
 			_notificationRepository.Add(new Notification

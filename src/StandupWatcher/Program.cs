@@ -20,6 +20,7 @@ namespace StandupWatcher
 					configurationBuilder
 						.SetBasePath(context.HostingEnvironment.ContentRootPath)
 						.AddYamlFile("appsettings.yaml", false, true)
+						.AddYamlFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.yaml", true, true)
 						.AddEnvironmentVariables();
 
 					if (args != null)
