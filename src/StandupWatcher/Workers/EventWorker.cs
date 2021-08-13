@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -33,8 +34,8 @@ namespace StandupWatcher.Workers
 			var storedEvents = _eventRepository.Get(x => x.Status == EventStatus.Active).ToList();
 			var actualEvents = _storeScanner.ScanForEvents().Where(x => x.Status == EventStatus.Active).ToList();
 
-			var actualEventsHash = ComputeHash(actualEvents.Select(x => x.EventId));
-			var storedEventsHash = ComputeHash(storedEvents.Select(x => x.EventId));
+			var actualEventsHash = ComputeHash(actualEvents.Select(x => x.EventId).OrderBy(x => x));
+			var storedEventsHash = ComputeHash(storedEvents.Select(x => x.EventId).OrderBy(x => x));
 
 			if (actualEventsHash.SequenceEqual(storedEventsHash))
 				return;
@@ -47,6 +48,9 @@ namespace StandupWatcher.Workers
 
 			foreach (var @event in difference)
 			{
+				@event.CreationTimestamp = DateTime.Now;
+				@event.ModificationTimestamp = DateTime.Now;
+
 				_eventRepository.Add(@event);
 			}
 

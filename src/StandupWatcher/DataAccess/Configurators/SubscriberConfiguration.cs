@@ -14,6 +14,8 @@ namespace StandupWatcher.DataAccess.Configurators
 			builder.HasKey(x => x.Id);
 
 			builder.Property(x => x.ChatId).HasColumnName("chatid").HasColumnType("BIGINT").IsRequired();
+			builder.Property(x => x.CreationTimestamp).HasColumnName("creationtimestamp").HasColumnType("TIMESTAMP").IsRequired();
+			builder.Property(x => x.ModificationTimestamp).HasColumnName("modificationtimestamp").HasColumnType("TIMESTAMP").IsRequired();
 		}
 	}
 }

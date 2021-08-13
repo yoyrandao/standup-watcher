@@ -15,6 +15,8 @@ namespace StandupWatcher.DataAccess.Configurators
 
 			builder.Property(x => x.Data).HasColumnName("data").HasColumnType("BYTEA").IsRequired();
 			builder.Property(x => x.NotificationSent).HasColumnName("notificationsent").HasColumnType("BOOLEAN").IsRequired();
+			builder.Property(x => x.CreationTimestamp).HasColumnName("creationtimestamp").HasColumnType("TIMESTAMP").IsRequired();
+			builder.Property(x => x.ModificationTimestamp).HasColumnName("modificationtimestamp").HasColumnType("TIMESTAMP").IsRequired();
 		}
 	}
 }
