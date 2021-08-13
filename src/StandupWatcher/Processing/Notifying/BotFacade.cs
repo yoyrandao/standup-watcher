@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using StandupWatcher.Common.Types;
 using StandupWatcher.DataAccess.Models;
 using StandupWatcher.DataAccess.Repositories;
 
