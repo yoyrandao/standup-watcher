@@ -9,6 +9,7 @@ namespace StandupWatcher.DataAccess.Models
 
 		public string EventId { get; init; }
 
+		/* Represents a byte value of EventData record. */
 		public byte[] Data { get; init; }
 
 		public EventStatus Status { get; init; }

@@ -9,6 +9,8 @@ namespace StandupWatcher.DataAccess.Configurators
 	{
 		public void Configure(EntityTypeBuilder<Subscriber> builder)
 		{
+			builder.ToTable("subscribers");
+
 			builder.HasKey(x => x.Id);
 
 			builder.Property(x => x.ChatId).HasColumnName("chatid").HasColumnType("BIGINT").IsRequired();

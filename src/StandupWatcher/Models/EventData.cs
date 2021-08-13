@@ -2,6 +2,7 @@
 
 namespace StandupWatcher.Models
 {
+	[Serializable]
 	public record EventData
 	{
 		public string Artist { get; init; }

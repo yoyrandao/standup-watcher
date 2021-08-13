@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
 using StandupWatcher.DataAccess.Configurators;
-using StandupWatcher.DataAccess.Models;
 
 namespace StandupWatcher.DataAccess
 {

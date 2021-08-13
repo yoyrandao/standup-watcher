@@ -9,6 +9,8 @@ namespace StandupWatcher.DataAccess.Configurators
 	{
 		public void Configure(EntityTypeBuilder<Event> builder)
 		{
+			builder.ToTable("events");
+
 			builder.HasKey(x => x.Id);
 
 			builder.Property(x => x.Data).HasColumnName("data").HasColumnType("BYTEA").IsRequired();

@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Text.RegularExpressions;
 
 using AngleSharp;
-using AngleSharp.Css.Dom;
 using AngleSharp.Dom;
-using AngleSharp.Html.Dom;
 
+using StandupWatcher.Common;
 using StandupWatcher.DataAccess.Models;
 using StandupWatcher.Models;
 
@@ -13,17 +14,18 @@ namespace StandupWatcher.Processing
 {
 	public class StoreScanner : IStoreScanner
 	{
-		public StoreScanner(IContentProvider contentProvider, string targetUrl)
+		public StoreScanner(IContentProvider contentProvider, IJsonSerializer serializer, string targetUrl)
 		{
 			_targetUrl = targetUrl;
+			_serializer = serializer;
 			_contentProvider = contentProvider;
 
-			_browsingContext = BrowsingContext.New(Configuration.Default.WithDefaultLoader().WithCss());
+			_browsingContext = BrowsingContext.New(Configuration.Default.WithCss());
 		}
 
 		#region Implementation of IStoreScanner
 
-		public List<Event> Scan()
+		public List<Event> ScanForEvents()
 		{
 			var pageContent = _contentProvider.GetPageContent(_targetUrl);
 
@@ -36,13 +38,19 @@ namespace StandupWatcher.Processing
 
 			foreach (var @event in pageEvents)
 			{
-				var isOnSoldOut = IsOnSoldOut(document, @event.Id);
-				var image = GetPictureUrl(document, @event.Id);
+				if (@event.Id is null)
+					continue;
+
+				var eventContent = document.GetElementById(@event.Id);
+
+				var isOnSoldOut = IsOnSoldOut(eventContent);
+				var eventData = GetEventData(eventContent);
 
 				events.Add(new Event
 				{
 					EventId = @event.Id,
-					Status = isOnSoldOut ? EventStatus.SoldOut : EventStatus.Active
+					Status = isOnSoldOut ? EventStatus.SoldOut : EventStatus.Active,
+					Data = _serializer.SerializeBytes(eventData)
 				});
 			}
 
@@ -51,27 +59,42 @@ namespace StandupWatcher.Processing
 
 		#endregion
 
-		private static bool IsOnSoldOut(IDocument document, string eventId)
+		private static bool IsOnSoldOut(IElement nodeElement)
 		{
-			var eventContent = document.GetElementById(eventId);
-
-			if (eventContent is null)
-				return false;
-
-			var soldOutBanners = eventContent.QuerySelectorAll(".evo_soldout");
+			var soldOutBanners = nodeElement.QuerySelectorAll(".evo_soldout");
 
 			return soldOutBanners.Any();
 		}
 
-		private static string GetPictureUrl(IDocument document, string eventId)
+		private EventData GetEventData(IElement nodeElement)
 		{
-			var eventContent = document.GetElementById(eventId);
-			var pictureBox = (IHtmlElement)eventContent?.QuerySelectorAll(".evo_boxtop").Single();
+			var eventSchemaBlock = nodeElement
+				?.GetElementsByClassName("evo_event_schema").SingleOrDefault()
+				?.GetElementsByTagName("script").SingleOrDefault();
 
-			return null;
+			var eventSchemaContent = _serializer.Deserialize<EventSchema>(eventSchemaBlock?.InnerHtml);
+
+			if (eventSchemaContent is null)
+				throw new SerializationException("Cannot deserialize event schema from resource.");
+
+			return new EventData
+			{
+				EventUrl = eventSchemaContent.Url,
+				Date = eventSchemaContent.StartDate,
+				PictureUrl = eventSchemaContent.Image,
+				Artist = eventSchemaContent.Description
+					.Replace("<!-- wp:paragraph -->", string.Empty)
+					.Replace("<!-- /wp:paragraph -->", string.Empty)
+					.Replace("<p>", string.Empty)
+					.Replace("</p>", string.Empty)
+					.Trim()
+					.RegexReplace(new Regex("\\s{2,}"), ". ")
+			};
 		}
 
 		private readonly string _targetUrl;
+
+		private readonly IJsonSerializer _serializer;
 
 		private readonly IContentProvider _contentProvider;
 		private readonly IBrowsingContext _browsingContext;

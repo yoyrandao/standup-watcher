@@ -36,11 +36,13 @@ namespace StandupWatcher
 
 		private static void ConfigureLogic(IServiceCollection services)
 		{
+			services.AddTransient<IJsonSerializer, JsonSerializer>();
 			services.AddTransient<IContentProvider, ContentProvider>();
 
 			services.AddTransient<IStoreScanner, StoreScanner>(
 				x => new StoreScanner(
 					x.GetService<IContentProvider>(),
+					x.GetService<IJsonSerializer>(),
 					x.GetService<ScannerConfiguration>()?.StoreUrl));
 		}
 
