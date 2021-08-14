@@ -27,9 +27,15 @@
 Успей купить билет!</value>
     </data>
     <data name="UnknownMessage" xml:space="preserve">
-        <value>Unknown command.</value>
+        <value>Не, такого не знаю</value>
     </data>
     <data name="SuccessfulOperationMessage" xml:space="preserve">
-        <value>Success!</value>
+        <value>Рахмет братан</value>
+    </data>
+    <data name="SubscribedStatusMessage" xml:space="preserve">
+        <value>Подписан</value>
+    </data>
+    <data name="NotSubscribedStatusMessage" xml:space="preserve">
+        <value>Не подписан</value>
     </data>
 </root>

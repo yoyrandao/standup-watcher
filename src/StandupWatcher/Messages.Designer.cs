@@ -75,7 +75,25 @@ namespace StandupWatcher {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Success!.
+        ///   Looks up a localized string similar to Не подписан.
+        /// </summary>
+        internal static string NotSubscribedStatusMessage {
+            get {
+                return ResourceManager.GetString("NotSubscribedStatusMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Подписан.
+        /// </summary>
+        internal static string SubscribedStatusMessage {
+            get {
+                return ResourceManager.GetString("SubscribedStatusMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Рахмет братан.
         /// </summary>
         internal static string SuccessfulOperationMessage {
             get {
@@ -84,7 +102,7 @@ namespace StandupWatcher {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unknown command..
+        ///   Looks up a localized string similar to Не, такого не знаю.
         /// </summary>
         internal static string UnknownMessage {
             get {

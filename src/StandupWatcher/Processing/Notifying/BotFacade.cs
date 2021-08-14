@@ -3,6 +3,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Microsoft.Extensions.Logging;
+
 using StandupWatcher.DataAccess.Models;
 using StandupWatcher.DataAccess.Repositories;
 
@@ -16,9 +18,10 @@ namespace StandupWatcher.Processing.Notifying
 {
 	public class BotFacade : IBotFacade
 	{
-		public BotFacade(ITelegramBotClient client, IGenericRepository<Subscriber> subscribersRepository)
+		public BotFacade(ITelegramBotClient client, IGenericRepository<Subscriber> subscribersRepository, ILogger<BotFacade> logger)
 		{
 			_client = client;
+			_logger = logger;
 			_subscribersRepository = subscribersRepository;
 		}
 
@@ -52,7 +55,7 @@ namespace StandupWatcher.Processing.Notifying
 				_ => exception.ToString()
 			};
 
-			// logging
+			_logger.LogError(errorMessage);
 			return Task.CompletedTask;
 		}
 
@@ -82,6 +85,12 @@ namespace StandupWatcher.Processing.Notifying
 					DeleteSubscriber(message.Chat.Id);
 					SendMessage(message.Chat.Id, Messages.SuccessfulOperationMessage);
 				},
+				"/status" => () =>
+				{
+					var isSubscribed = IsSubscribed(message.Chat.Id);
+
+					SendMessage(message.Chat.Id, isSubscribed ? Messages.SubscribedStatusMessage : Messages.NotSubscribedStatusMessage);
+				},
 
 				_ => (Action) (() => ReplyUnknownAction(message.Chat.Id))
 			};
@@ -94,6 +103,11 @@ namespace StandupWatcher.Processing.Notifying
 			{
 				await HandleError(client, e, CancellationToken.None);
 			}
+		}
+
+		private bool IsSubscribed(long chatId)
+		{
+			return _subscribersRepository.Get(x => x.ChatId.Equals(chatId)).Any();
 		}
 
 		private void ReplyUnknownAction(long chatId)
@@ -125,11 +139,12 @@ namespace StandupWatcher.Processing.Notifying
 
 		private Task OnUnknownUpdateRecieved()
 		{
-			// logging
+			_logger.LogWarning("Unknown update recieved.");
 			return Task.CompletedTask;
 		}
 
 		private readonly ITelegramBotClient _client;
 		private readonly IGenericRepository<Subscriber> _subscribersRepository;
+		private readonly ILogger<BotFacade> _logger;
 	}
 }

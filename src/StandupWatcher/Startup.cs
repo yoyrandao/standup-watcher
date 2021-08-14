@@ -18,6 +18,8 @@ using StandupWatcher.Processing.Notifying;
 using Telegram.Bot;
 using Telegram.Bot.Extensions.Polling;
 
+using ILogger = Microsoft.Extensions.Logging.ILogger;
+
 
 namespace StandupWatcher
 {
@@ -38,6 +40,8 @@ namespace StandupWatcher
 			ConfigureDatabase(services);
 
 			ConfigureBot(services);
+
+			Log.Logger.Information("Application started.");
 
 			new WorkerInstaller(services).Install().Run(_tokenSource.Token);
 		}
@@ -78,6 +82,8 @@ namespace StandupWatcher
 			var updateHandler = serviceProvider.GetService<IBotFacade>();
 
 			bot!.StartReceiving(new DefaultUpdateHandler(updateHandler!.HandleMessages, updateHandler.HandleError), _tokenSource.Token);
+
+			Log.Logger.Information("Bot notifier started.");
 		}
 
 		private static void ConfigureLogging(IServiceCollection services)
