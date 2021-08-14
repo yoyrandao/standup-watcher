@@ -125,6 +125,9 @@ namespace StandupWatcher.Processing.Notifying
 
 		private void RegisterSubscriber(long chatId)
 		{
+			if (IsSubscribed(chatId))
+				return;
+
 			var now = DateTime.Now;
 
 			_subscribersRepository.Add(new Subscriber
