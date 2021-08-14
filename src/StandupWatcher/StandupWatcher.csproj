@@ -26,9 +26,14 @@
     <ItemGroup>
       <None Update="appsettings.Production.yaml">
         <DependentUpon>appsettings.yaml</DependentUpon>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
       <None Update="appsettings.Development.yaml">
         <DependentUpon>appsettings.yaml</DependentUpon>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="appsettings.yaml">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
     </ItemGroup>
 

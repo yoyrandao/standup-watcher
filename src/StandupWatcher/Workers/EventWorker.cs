@@ -52,18 +52,18 @@ namespace StandupWatcher.Workers
 
 			var notificationPayload =
 				_serializer.SerializeBytes(difference.Select(x => _serializer.DeserealizeBytes<EventData>(x.Data)).ToList());
+			var now = DateTime.Now;
 
 			foreach (var @event in difference)
 			{
-				var now = DateTime.Now;
-
 				_eventRepository.Add(@event with { CreationTimestamp = now, ModificationTimestamp = now });
 			}
 
 			_notificationRepository.Add(new Notification
 			{
 				Data = notificationPayload,
-				NotificationSent = false
+				CreationTimestamp = now,
+				ModificationTimestamp = now
 			});
 
 			_eventRepository.Save();
