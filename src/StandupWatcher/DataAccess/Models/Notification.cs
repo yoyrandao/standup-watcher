@@ -1,5 +1,6 @@
 ﻿using System;
 
+
 namespace StandupWatcher.DataAccess.Models
 {
 	[Serializable]
@@ -7,6 +8,6 @@ namespace StandupWatcher.DataAccess.Models
 	{
 		public byte[] Data { get; init; }
 
-		public bool NotificationSent { get; init; }
+		public bool NotificationSent { get; set; }
 	}
 }

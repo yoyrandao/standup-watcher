@@ -11,6 +11,7 @@ using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
+
 namespace StandupWatcher.Processing.Notifying
 {
 	public class BotFacade : IBotFacade
@@ -76,7 +77,7 @@ namespace StandupWatcher.Processing.Notifying
 					RegisterSubscriber(message.Chat.Id);
 					SendMessage(message.Chat.Id, Messages.SuccessfulOperationMessage);
 				},
-				"/stop"  => () =>
+				"/stop" => () =>
 				{
 					DeleteSubscriber(message.Chat.Id);
 					SendMessage(message.Chat.Id, Messages.SuccessfulOperationMessage);

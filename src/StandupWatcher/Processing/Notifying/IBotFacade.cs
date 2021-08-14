@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
+
 namespace StandupWatcher.Processing.Notifying
 {
 	public interface IBotFacade

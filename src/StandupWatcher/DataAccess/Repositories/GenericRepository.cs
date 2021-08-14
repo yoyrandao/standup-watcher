@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 using StandupWatcher.DataAccess.Models;
 
+
 namespace StandupWatcher.DataAccess.Repositories
 {
 	public sealed class GenericRepository<T> : IGenericRepository<T> where T : Entity

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 using StandupWatcher.DataAccess.Models;
 
+
 namespace StandupWatcher.DataAccess.Configurators
 {
 	public class EventConfiguration : IEntityTypeConfiguration<Event>

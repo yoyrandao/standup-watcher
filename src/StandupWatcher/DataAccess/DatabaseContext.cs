@@ -2,6 +2,7 @@
 
 using StandupWatcher.DataAccess.Configurators;
 
+
 namespace StandupWatcher.DataAccess
 {
 	public sealed class DatabaseContext : DbContext

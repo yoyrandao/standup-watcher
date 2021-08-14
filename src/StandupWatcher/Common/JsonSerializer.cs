@@ -2,6 +2,7 @@
 
 using Newtonsoft.Json;
 
+
 namespace StandupWatcher.Common
 {
 	public class JsonSerializer : IJsonSerializer

@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 
 using StandupWatcher.DataAccess.Models;
 
+
 namespace StandupWatcher.DataAccess.Repositories
 {
 	public interface IGenericRepository<T> where T : Entity

@@ -1,5 +1,6 @@
 ﻿using System;
 
+
 namespace StandupWatcher.Common.Types
 {
 	[Serializable]

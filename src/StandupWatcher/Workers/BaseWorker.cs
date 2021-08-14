@@ -2,6 +2,7 @@
 
 using StandupWatcher.Workers.Payload;
 
+
 namespace StandupWatcher.Workers
 {
 	public class BaseWorker<T> where T : WorkerPayload

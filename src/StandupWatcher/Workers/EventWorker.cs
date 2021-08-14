@@ -11,6 +11,7 @@ using StandupWatcher.Models;
 using StandupWatcher.Processing;
 using StandupWatcher.Workers.Payload;
 
+
 namespace StandupWatcher.Workers
 {
 	public class EventWorker : BaseWorker<EventWorkerPayload>

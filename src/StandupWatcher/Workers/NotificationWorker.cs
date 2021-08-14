@@ -9,6 +9,7 @@ using StandupWatcher.Models;
 using StandupWatcher.Processing.Notifying;
 using StandupWatcher.Workers.Payload;
 
+
 namespace StandupWatcher.Workers
 {
 	public class NotificationWorker : BaseWorker<NotificationWorkerPayload>
@@ -31,7 +32,10 @@ namespace StandupWatcher.Workers
 		protected override void Process()
 		{
 			var notifications = _notificationsRepository.Get(x => !x.NotificationSent).ToList();
-			var subscribers = _subscribersRepository.Get();
+			var subscribers = _subscribersRepository.Get().ToList();
+
+			if (!notifications.Any() || !subscribers.Any())
+				return;
 
 			notifications.ForEach(notification =>
 			{
@@ -47,7 +51,7 @@ namespace StandupWatcher.Workers
 					}
 				}
 
-				_notificationsRepository.Update(notification with { NotificationSent = true });
+				notification.NotificationSent = true;
 			});
 
 			_notificationsRepository.Save();

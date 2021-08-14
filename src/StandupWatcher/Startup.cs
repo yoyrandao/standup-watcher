@@ -15,6 +15,7 @@ using StandupWatcher.Processing.Notifying;
 using Telegram.Bot;
 using Telegram.Bot.Extensions.Polling;
 
+
 namespace StandupWatcher
 {
 	public static class Startup

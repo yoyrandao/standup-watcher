@@ -10,6 +10,7 @@ using StandupWatcher.Common;
 using StandupWatcher.DataAccess.Models;
 using StandupWatcher.Models;
 
+
 namespace StandupWatcher.Processing
 {
 	public class StoreScanner : IStoreScanner

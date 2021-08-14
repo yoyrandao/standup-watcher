@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
+
 namespace StandupWatcher.Common
 {
 	public static class StringExtensions
