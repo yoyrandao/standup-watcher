@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+
+using Serilog;
 
 
 namespace StandupWatcher
@@ -27,7 +28,7 @@ namespace StandupWatcher
 					if (args != null)
 						configurationBuilder.AddCommandLine(args);
 				})
-				.ConfigureLogging(config => { config.ClearProviders(); })
-				.ConfigureServices(Startup.ConfigureServices);
+				.ConfigureServices(Startup.ConfigureServices)
+				.UseSerilog();
 	}
 }

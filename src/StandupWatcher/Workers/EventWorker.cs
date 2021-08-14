@@ -4,6 +4,8 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
+using Microsoft.Extensions.Logging;
+
 using StandupWatcher.Common;
 using StandupWatcher.DataAccess.Models;
 using StandupWatcher.DataAccess.Repositories;
@@ -21,9 +23,11 @@ namespace StandupWatcher.Workers
 			IStoreScanner                    storeScanner,
 			IGenericRepository<Event>        eventRepository,
 			IGenericRepository<Notification> notificationRepository,
-			IJsonSerializer                  serializer)
-			: base(payload)
+			IJsonSerializer                  serializer,
+			ILogger<NotificationWorker>      logger)
+			: base(payload, logger)
 		{
+			_logger = logger;
 			_serializer = serializer;
 			_storeScanner = storeScanner;
 			_eventRepository = eventRepository;
@@ -40,6 +44,8 @@ namespace StandupWatcher.Workers
 
 			if (actualEventsHash.SequenceEqual(storedEventsHash))
 				return;
+
+			_logger.LogInformation("Found new events. Processing...");
 
 			var storedEventIds = storedEvents.Select(x => x.EventId);
 			var difference = actualEvents.Where(e => !storedEventIds.Contains(e.EventId)).ToList();
@@ -62,6 +68,8 @@ namespace StandupWatcher.Workers
 
 			_eventRepository.Save();
 			_notificationRepository.Save();
+
+			_logger.LogInformation("New events processed.");
 		}
 
 		private static byte[] ComputeHash(IEnumerable<string> contents)
@@ -76,5 +84,6 @@ namespace StandupWatcher.Workers
 		private readonly IGenericRepository<Event> _eventRepository;
 		private readonly IGenericRepository<Notification> _notificationRepository;
 		private readonly IJsonSerializer _serializer;
+		private readonly ILogger<NotificationWorker> _logger;
 	}
 }

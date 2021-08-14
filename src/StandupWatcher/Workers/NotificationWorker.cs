@@ -2,6 +2,8 @@
 using System.Globalization;
 using System.Linq;
 
+using Microsoft.Extensions.Logging;
+
 using StandupWatcher.Common;
 using StandupWatcher.DataAccess.Models;
 using StandupWatcher.DataAccess.Repositories;
@@ -19,9 +21,12 @@ namespace StandupWatcher.Workers
 			IBotFacade                       botFacade,
 			IGenericRepository<Notification> notificationsRepository,
 			IGenericRepository<Subscriber>   subscribersRepository,
-			IJsonSerializer                  serializer)
-			: base(payload)
+			IJsonSerializer                  serializer,
+			ILogger<NotificationWorker>      logger)
+			: base(payload, logger)
 		{
+			_logger = logger;
+
 			_botFacade = botFacade;
 			_serializer = serializer;
 
@@ -36,6 +41,8 @@ namespace StandupWatcher.Workers
 
 			if (!notifications.Any() || !subscribers.Any())
 				return;
+
+			_logger.LogInformation($"Starting send {notifications.Count} notifications.");
 
 			notifications.ForEach(notification =>
 			{
@@ -55,6 +62,8 @@ namespace StandupWatcher.Workers
 			});
 
 			_notificationsRepository.Save();
+
+			_logger.LogInformation($"{notifications.Count} notifications sent.");
 		}
 
 		private static string ComposeNotificationMessage(string artist, DateTime date, string eventUrl)
@@ -65,6 +74,7 @@ namespace StandupWatcher.Workers
 
 		private readonly IBotFacade _botFacade;
 		private readonly IJsonSerializer _serializer;
+		private readonly ILogger<NotificationWorker> _logger;
 
 		private readonly IGenericRepository<Subscriber> _subscribersRepository;
 		private readonly IGenericRepository<Notification> _notificationsRepository;

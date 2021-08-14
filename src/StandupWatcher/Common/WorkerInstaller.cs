@@ -1,7 +1,10 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Threading;
 
 using Microsoft.Extensions.DependencyInjection;
 
@@ -50,7 +53,7 @@ namespace StandupWatcher.Common
 			return this;
 		}
 
-		public void Run()
+		public void Run(CancellationToken cancellationToken)
 		{
 			if (!_workersToActivate.Any())
 				return;
@@ -61,7 +64,7 @@ namespace StandupWatcher.Common
 			{
 				var service = serviceProvider.GetService(workerType);
 
-				service.GetType().GetMethod("Work")?.Invoke(service, null);
+				service.GetType().GetMethod("Work")?.Invoke(service, new object?[] { cancellationToken });
 			});
 		}
 

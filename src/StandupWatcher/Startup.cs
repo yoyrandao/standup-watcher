@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+
+using Serilog;
 
 using StandupWatcher.Common;
 using StandupWatcher.Common.Types;
@@ -29,12 +32,14 @@ namespace StandupWatcher
 			services.BindConfiguration<WorkersConfiguration>(_configuration, "workers");
 			services.BindConfiguration<ScannerConfiguration>(_configuration, "scanner");
 
+			ConfigureLogging(services);
+
 			ConfigureLogic(services);
 			ConfigureDatabase(services);
 
 			ConfigureBot(services);
 
-			new WorkerInstaller(services).Install().Run();
+			new WorkerInstaller(services).Install().Run(_tokenSource.Token);
 		}
 
 		private static void ConfigureDatabase(IServiceCollection services)
@@ -73,6 +78,20 @@ namespace StandupWatcher
 			var updateHandler = serviceProvider.GetService<IBotFacade>();
 
 			bot!.StartReceiving(new DefaultUpdateHandler(updateHandler!.HandleMessages, updateHandler.HandleError), _tokenSource.Token);
+		}
+
+		private static void ConfigureLogging(IServiceCollection services)
+		{
+			Log.Logger = new LoggerConfiguration()
+				.ReadFrom.Configuration(_configuration)
+				.MinimumLevel.Information()
+				.CreateLogger();
+
+			services.AddLogging(logging =>
+			{
+				logging.ClearProviders();
+				logging.AddSerilog(Log.Logger);
+			});
 		}
 
 		private static IConfiguration _configuration;

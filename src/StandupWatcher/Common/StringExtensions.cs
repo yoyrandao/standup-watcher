@@ -9,5 +9,13 @@ namespace StandupWatcher.Common
 		{
 			return Regex.Replace(@string, regex.ToString(), replacement);
 		}
+
+		public static string Capitalize(this string @string)
+		{
+			if (@string.Length == 0)
+				return string.Empty;
+
+			return @string[0].ToString().ToUpper() + @string[1..];
+		}
 	}
 }

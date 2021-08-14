@@ -1,6 +1,20 @@
 ﻿connectionStrings:
   watcherDatabase: 'Server=localhost;Port=5432;Database=watcher_db;Username=postgres;Password=@VWOn8MW'
 
+serilog:
+  using:
+    - 'Serilog.Sinks.Console'
+  minimumLevel:
+    Default: 'Information'
+    override:
+      Microsoft: 'Fatal'
+      System: 'Fatal'
+      Microsoft.EntityFrameworkCore.Database.Command: 'Warning'
+  writeTo:
+    - name: 'Console'
+      args:
+        outputTemplate: '[{Timestamp:dd-MM-yyyy HH:mm:ss.ffffff}] [{Level}] {Message}{NewLine}{Exception}'
+
 scanner:
   storeUrl: 'https://standupstore.ru'
 
