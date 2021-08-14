@@ -18,8 +18,6 @@ using StandupWatcher.Processing.Notifying;
 using Telegram.Bot;
 using Telegram.Bot.Extensions.Polling;
 
-using ILogger = Microsoft.Extensions.Logging.ILogger;
-
 
 namespace StandupWatcher
 {

@@ -43,7 +43,7 @@ namespace StandupWatcher.Workers
 
 		protected virtual void Process() { }
 
-		private readonly WorkerPayload _payload;
 		private readonly ILogger _logger;
+		private readonly WorkerPayload _payload;
 	}
 }

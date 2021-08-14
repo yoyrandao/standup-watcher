@@ -8,8 +8,8 @@ namespace StandupWatcher.DataAccess.Models
 	{
 		public int Id { get; init; }
 
-		public DateTime CreationTimestamp { get; set; }
+		public DateTime CreationTimestamp { get; init; }
 
-		public DateTime ModificationTimestamp { get; set; }
+		public DateTime ModificationTimestamp { get; init; }
 	}
 }

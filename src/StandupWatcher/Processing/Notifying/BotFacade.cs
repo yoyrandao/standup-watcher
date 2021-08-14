@@ -50,7 +50,7 @@ namespace StandupWatcher.Processing.Notifying
 		{
 			var errorMessage = exception switch
 			{
-				ApiRequestException e => $"Telegram API error [{e.ErrorCode}]",
+				ApiRequestException e => $"Recieved error with code {e.ErrorCode} from Telegram API.",
 
 				_ => exception.ToString()
 			};

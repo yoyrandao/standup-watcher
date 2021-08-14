@@ -1,5 +1,5 @@
 ﻿connectionStrings:
-  watcherDatabase: 'Server=localhost;Port=5432;Database=watcher_db;Username=postgres;Password=@VWOn8MW'
+  watcherDatabase: ''
 
 serilog:
   using:

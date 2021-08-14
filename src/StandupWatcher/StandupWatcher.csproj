@@ -27,6 +27,9 @@
       <None Update="appsettings.Production.yaml">
         <DependentUpon>appsettings.yaml</DependentUpon>
       </None>
+      <None Update="appsettings.Development.yaml">
+        <DependentUpon>appsettings.yaml</DependentUpon>
+      </None>
     </ItemGroup>
 
     <ItemGroup>

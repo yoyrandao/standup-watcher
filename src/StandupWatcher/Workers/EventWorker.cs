@@ -80,10 +80,11 @@ namespace StandupWatcher.Workers
 			return md5.ComputeHash(Encoding.UTF8.GetBytes(content));
 		}
 
+		private readonly IJsonSerializer _serializer;
+		private readonly ILogger<NotificationWorker> _logger;
+
 		private readonly IStoreScanner _storeScanner;
 		private readonly IGenericRepository<Event> _eventRepository;
 		private readonly IGenericRepository<Notification> _notificationRepository;
-		private readonly IJsonSerializer _serializer;
-		private readonly ILogger<NotificationWorker> _logger;
 	}
 }

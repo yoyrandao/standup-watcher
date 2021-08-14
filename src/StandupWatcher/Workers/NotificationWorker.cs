@@ -73,6 +73,7 @@ namespace StandupWatcher.Workers
 		}
 
 		private readonly IBotFacade _botFacade;
+
 		private readonly IJsonSerializer _serializer;
 		private readonly ILogger<NotificationWorker> _logger;
 

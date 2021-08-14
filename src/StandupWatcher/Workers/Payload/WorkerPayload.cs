@@ -11,8 +11,8 @@ namespace StandupWatcher.Workers.Payload
 			Interval = interval;
 		}
 
-		public TimeSpan Interval { get; }
-
 		public string Name { get; }
+
+		public TimeSpan Interval { get; }
 	}
 }
