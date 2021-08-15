@@ -39,37 +39,52 @@ namespace StandupWatcher.Workers
 			var storedEvents = _eventRepository.Get(x => x.Status == EventStatus.Active).ToList();
 			var actualEvents = _storeScanner.ScanForEvents().Where(x => x.Status == EventStatus.Active).ToList();
 
-			var actualEventsHash = ComputeHash(actualEvents.Select(x => x.EventId).OrderBy(x => x));
-			var storedEventsHash = ComputeHash(storedEvents.Select(x => x.EventId).OrderBy(x => x));
+			var storedEventIds = storedEvents.Select(x => x.EventId).ToList();
+			var actualEventIds = actualEvents.Select(x => x.EventId).ToList();
+
+			var actualEventsHash = ComputeHash(actualEventIds.OrderBy(x => x));
+			var storedEventsHash = ComputeHash(storedEventIds.OrderBy(x => x));
 
 			if (actualEventsHash.SequenceEqual(storedEventsHash))
 				return;
 
-			_logger.LogInformation("Found new events. Processing...");
+			var newEvents = actualEvents.Where(e => !storedEventIds.Contains(e.EventId)).ToList();
+			var deletedEvents = storedEvents.Where(e => !actualEventIds.Contains(e.EventId)).ToList();
 
-			var storedEventIds = storedEvents.Select(x => x.EventId);
-			var difference = actualEvents.Where(e => !storedEventIds.Contains(e.EventId)).ToList();
-
-			var notificationPayload =
-				_serializer.SerializeBytes(difference.Select(x => _serializer.DeserealizeBytes<EventData>(x.Data)).ToList());
-			var now = DateTime.Now;
-
-			foreach (var @event in difference)
+			if (deletedEvents.Any())
 			{
-				_eventRepository.Add(@event with { CreationTimestamp = now, ModificationTimestamp = now });
+				deletedEvents.ForEach(e => _eventRepository.Delete(e));
+				_eventRepository.Save();
 			}
 
-			_notificationRepository.Add(new Notification
-			{
-				Data = notificationPayload,
-				CreationTimestamp = now,
-				ModificationTimestamp = now
-			});
+			if (!newEvents.Any())
+				return;
+
+			_logger.LogInformation("Found new events. Processing...");
+
+			var now = DateTime.Now;
+
+			newEvents.ForEach(e => _eventRepository.Add(e with { CreationTimestamp = now, ModificationTimestamp = now }));
+
+			PrepareNotification(newEvents, now);
 
 			_eventRepository.Save();
 			_notificationRepository.Save();
 
 			_logger.LogInformation("New events processed.");
+		}
+
+		private void PrepareNotification(IEnumerable<Event> events, DateTime creationDate)
+		{
+			var notificationPayload =
+				_serializer.SerializeBytes(events.Select(x => _serializer.DeserealizeBytes<EventData>(x.Data)).ToList());
+
+			_notificationRepository.Add(new Notification
+			{
+				Data = notificationPayload,
+				CreationTimestamp = creationDate,
+				ModificationTimestamp = creationDate
+			});
 		}
 
 		private static byte[] ComputeHash(IEnumerable<string> contents)
