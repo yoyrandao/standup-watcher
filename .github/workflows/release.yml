@@ -98,10 +98,22 @@ jobs:
             -outPath ./build/configurations/pg-env.prod.list `
             -passphrase "${{ secrets.CONFIGURATION_PASSPHRASE }}"
 
+      - name: delete old deploy data
+        uses: appleboy/ssh-action@master
+        with:
+          timeout: 3m
+          host: ${{ secrets.AGENT_HOST }}
+          key: ${{ secrets.AGENT_PRIVATE_KEY }}
+          username: ${{ secrets.AGENT_USERNAME }}
+          script: |
+            echo 'deleting deploy directory.';
+            rm -rf /svc/sw
+            echo 'done.'
+
       - name: copy pg-env file to target agent
         uses: appleboy/scp-action@master
         with:
-          timeout: 1m
+          timeout: 3m
           strip_components: 2
           host: ${{ secrets.AGENT_HOST }}
           key: ${{ secrets.AGENT_PRIVATE_KEY }}
@@ -119,3 +131,17 @@ jobs:
           username: ${{ secrets.AGENT_USERNAME }}
           source: deploy/docker-compose.production.yaml
           target: /svc/sw
+
+      - name: creating containers
+        uses: appleboy/ssh-action@master
+        with:
+          timeout: 3m
+          host: ${{ secrets.AGENT_HOST }}
+          key: ${{ secrets.AGENT_PRIVATE_KEY }}
+          username: ${{ secrets.AGENT_USERNAME }}
+          script: |
+            cd /svc/sw
+
+            echo 'started creating containers.'
+            docker-compose -f docker-compose.production.yaml up -d
+            echo 'done.'
