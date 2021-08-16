@@ -106,8 +106,17 @@ jobs:
           key: ${{ secrets.AGENT_PRIVATE_KEY }}
           username: ${{ secrets.AGENT_USERNAME }}
           script: |
+            echo 'stopping old containers.'
+            cd /svc/sw && docker-compose -f docker-compose.production.yaml down
+            echo 'done.'
+
             echo 'deleting deploy directory.';
             rm -rf /svc/sw
+            echo 'done.'
+
+            echo 'deleting old images.'
+            docker image rm $(docker images --format="{{.Repository}} {{.ID}}" | grep sw-service | cut -d' ' -f2)
+            docker image rm $(docker images --format="{{.Repository}} {{.ID}}" | grep sw-database | cut -d' ' -f2)
             echo 'done.'
 
       - name: copy pg-env file to target agent
