@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      TAG_REF: ${{ GITHUB_SHA:8 }}
+      TAG_REF: ${ GITHUB_SHA }
 
     steps:
       - name: checkout project
