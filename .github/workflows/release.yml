@@ -6,10 +6,11 @@ jobs:
   build_database:
     runs-on: ubuntu-latest
 
-    env:
-      TAG_REF: ${ GITHUB_SHA }
-
     steps:
+      - name: create short sha
+        id: short_sha
+        uses: benjlevesque/short-sha@v1.2
+
       - name: checkout project
         uses: actions/checkout@v2
 
@@ -25,10 +26,12 @@ jobs:
       - name: build and push database
         id: docker_build_database
         uses: docker/build-push-action@v2
+        env:
+          TAG_REF: ${{ steps.short_sha.outputs.sha }}
         with:
           push: true
           file: ./deploy/database/Dockerfile
           context: ./deploy/database/
           tags: |
             ${{ secrets.DHUB_USERNAME }}/sw-database:latest
-            ${{ secrets.DHUB_USERNAME }}/sw-database:${{ github.sha::8 }}
+            ${{ secrets.DHUB_USERNAME }}/sw-database:${{ env.TAG_REF }}
