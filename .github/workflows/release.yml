@@ -104,7 +104,7 @@ jobs:
           host: ${{ secrets.AGENT_HOST }}
           key: ${{ secrets.AGENT_PRIVATE_KEY }}
           username: ${{ secrets.AGENT_USERNAME }}
-          source: ./build/configuration/pg-env.prod.list
+          source: ./build/configurations/pg-env.prod.list
           target: /svc/sw/pg-env.prod.list
 
       - name: copy docker-compose file to target agent
