@@ -10,6 +10,8 @@ jobs:
       - name: create short sha
         id: short_sha
         uses: benjlevesque/short-sha@v1.2
+        with:
+          length: 12
 
       - name: checkout project
         uses: actions/checkout@v2
