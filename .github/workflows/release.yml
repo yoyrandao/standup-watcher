@@ -31,4 +31,4 @@ jobs:
           context: ./deploy/database/
           tags: |
             ${{ secrets.DHUB_USERNAME }}/sw-database:latest
-            ${{ secrets.DHUB_USERNAME }}/sw-database:${{ github.sha }}
+            ${{ secrets.DHUB_USERNAME }}/sw-database:${{ github.sha:8 }}
