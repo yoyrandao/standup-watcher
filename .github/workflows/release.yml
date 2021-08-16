@@ -78,3 +78,40 @@ jobs:
           tags: |
             ${{ secrets.DHUB_USERNAME }}/sw-service:latest
             ${{ secrets.DHUB_USERNAME }}/sw-service:${{ env.TAG_REF }}
+
+  deploy_service:
+    runs-on: ubuntu-latest
+
+    needs:
+      - build_database
+      - build_service
+
+    steps:
+      - name: checkout project
+        uses: actions/checkout@v2
+
+      - name: decrypt pg environment variables
+        shell: pwsh
+        run: |
+          ./build/tools/decrypt-secret.ps1 `
+            -secretPath ./build/configurations/pg-env.ss `
+            -outPath ./build/configurations/pg-env.prod.list `
+            -passphrase "${{ secrets.CONFIGURATION_PASSPHRASE }}"
+
+      - name: copy pg-env file to target agent
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.AGENT_HOST }}
+          key: ${{ secrets.AGENT_PRIVATE_KEY }}
+          username: ${{ secrets.AGENT_USERNAME }}
+          source: ./build/configuration/pg-env.prod.list
+          target: /svc/sw/pg-env.prod.list
+
+      - name: copy docker-compose file to target agent
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.AGENT_HOST }}
+          key: ${{ secrets.AGENT_PRIVATE_KEY }}
+          username: ${{ secrets.AGENT_USERNAME }}
+          source: ./deploy/docker-compose.production.yaml
+          target: /svc/sw/docker-compose.yaml

@@ -1,10 +1,10 @@
 version: '3.8'
 services:
   pg_database:
-    image: ./database
+    image: yoyrandao/sw-database:latest
     container_name: pg_database
     env_file:
-      - pg-env.local.list
+      - pg-env.prod.list
     volumes:
       - db_data:/var/lib/postgresql/data
     ports:
@@ -12,8 +12,8 @@ services:
     restart: always
 
   processing:
-    container_name: watcher
-    image: localwatcher
+    image: yoyrandao/sw-service:latest
+    container_name: sw-service
     restart: always
 
 volumes:
