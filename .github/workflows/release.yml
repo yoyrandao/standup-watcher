@@ -1,0 +1,34 @@
+name: release
+
+on: workflow_dispatch
+
+jobs:
+  build_database:
+    runs-on: ubuntu-latest
+
+    env:
+      TAG_REF: ${ GITHUB_SHA:8 }
+
+    steps:
+      - name: checkout project
+        uses: actions/checkout@v2
+
+      - name: logging to docker hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DHUB_USERNAME }}
+          password: ${{ secrets.DHUB_ACCESS_TOKEN }}
+
+      - name: setup docker buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: build and push database
+        id: docker_build_database
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          file: ./Dockerfile
+          context: ./deploy/database/
+          tags: |
+            ${{ secrets.DHUB_USERNAME }}/sw-database:latest
+            ${{ secrets.DHUB_USERNAME }}/sw-database:${{ env.TAG_REF }}
