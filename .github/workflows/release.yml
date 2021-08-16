@@ -56,7 +56,7 @@ jobs:
           ./build/tools/decrypt-secret.ps1 `
             -secretPath ./build/configurations/production.ss `
             -outPath ./src/StandupWatcher/appsettings.Production.yaml `
-            -passphrase ${{ secrets.CONFIGURATION_PASSPHRASE }}
+            -passphrase "${{ secrets.CONFIGURATION_PASSPHRASE }}"
 
       - name: logging to docker hub
         uses: docker/login-action@v1
