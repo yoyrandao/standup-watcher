@@ -46,8 +46,9 @@ namespace StandupWatcher
 
 		private static void ConfigureDatabase(IServiceCollection services)
 		{
+			var connStr = _configuration.GetConnectionString("watcherDatabase");
 			services.AddDbContext<DatabaseContext>(
-				options => options.UseNpgsql(_configuration.GetConnectionString("watcherDatabase")));
+				options => options.UseNpgsql(connStr));
 
 			services.AddTransient(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 		}

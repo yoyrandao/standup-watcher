@@ -22,6 +22,7 @@ namespace StandupWatcher.DataAccess
 			builder.ApplyConfiguration(new EventConfiguration());
 			builder.ApplyConfiguration(new SubscriberConfiguration());
 			builder.ApplyConfiguration(new NotificationConfiguration());
+			builder.ApplyConfiguration(new SubscribedAuthorsConfiguration());
 		}
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

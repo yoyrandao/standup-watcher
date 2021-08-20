@@ -21,6 +21,7 @@ namespace StandupWatcher.Workers
 			IBotFacade                       botFacade,
 			IGenericRepository<Notification> notificationsRepository,
 			IGenericRepository<Subscriber>   subscribersRepository,
+			IGenericRepository<SubscribedAuthors>   subscribedAuthorsRepository,
 			IJsonSerializer                  serializer,
 			ILogger<NotificationWorker>      logger)
 			: base(payload, logger)
@@ -32,12 +33,14 @@ namespace StandupWatcher.Workers
 
 			_subscribersRepository = subscribersRepository;
 			_notificationsRepository = notificationsRepository;
+			_subscribedAuthorsRepository = subscribedAuthorsRepository;
 		}
 
 		protected override void Process()
 		{
 			var notifications = _notificationsRepository.Get(x => !x.NotificationSent).ToList();
 			var subscribers = _subscribersRepository.Get().ToList();
+			var subscribedAuthors = _subscribedAuthorsRepository.Get().ToList();
 
 			if (!notifications.Any() || !subscribers.Any())
 				return;
@@ -50,7 +53,9 @@ namespace StandupWatcher.Workers
 
 				foreach (var subscriber in subscribers)
 				{
-					foreach (var eventData in payload)
+					var filteredNotifications = payload.Where(x => subscribedAuthors.Any(author => x.Artist.Contains(author.StanduperName) && author.ChatId == subscriber.ChatId));
+
+					foreach (var eventData in subscribedAuthors.Where(x => x.ChatId == subscriber.ChatId).Any() ? filteredNotifications : payload)
 					{
 						var message = ComposeNotificationMessage(eventData.Artist, eventData.Date, eventData.EventUrl);
 
@@ -79,5 +84,6 @@ namespace StandupWatcher.Workers
 
 		private readonly IGenericRepository<Subscriber> _subscribersRepository;
 		private readonly IGenericRepository<Notification> _notificationsRepository;
+		private readonly IGenericRepository<SubscribedAuthors> _subscribedAuthorsRepository;
 	}
 }
