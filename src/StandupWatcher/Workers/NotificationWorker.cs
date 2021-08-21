@@ -53,9 +53,9 @@ namespace StandupWatcher.Workers
 
 				foreach (var subscriber in subscribers)
 				{
-					var filteredNotifications = payload.Where(x => subscribedAuthors.Any(author => x.Artist.Contains(author.StanduperName) && author.ChatId == subscriber.ChatId));
-
-					foreach (var eventData in subscribedAuthors.Where(x => x.ChatId == subscriber.ChatId).Any() ? filteredNotifications : payload)
+					var filteredNotifications = payload.Where(regularEvent => subscribedAuthors.Any(authors => regularEvent.Artist.Contains(authors.StanduperName)));
+					
+					foreach (var eventData in filteredNotifications)
 					{
 						var message = ComposeNotificationMessage(eventData.Artist, eventData.Date, eventData.EventUrl);
 

@@ -108,11 +108,36 @@ namespace StandupWatcher.Processing.Notifying
                         _subscribedAuthors.Add(newAuthor(message.Chat.Id, joinedRequestedAuthor));
                         _subscribedAuthors.Save();
 
-                        SendMessage(message.Chat.Id, $"{joinedRequestedAuthor} Добавлен в фильтр");
+                        SendMessage(message.Chat.Id, $"{joinedRequestedAuthor} {Messages.AddedToFavoriteMessage}");
                     }
                 })
                 ,
+                "/remove" => (Action)(() =>
+                {
+                    var isSubscribed = IsSubscribed(message.Chat.Id);
 
+                    if (isSubscribed)
+                    {
+                        var requestedAuthor = message.Text.Split(' ').ToList();
+                        requestedAuthor = requestedAuthor.Skip(1).ToList();
+
+                        var joinedRequestedAuthor = string.Join(' ', requestedAuthor);
+                        var searchedAuthors = _subscribedAuthors.Get(x => x.ChatId.Equals(message.Chat.Id) && x.StanduperName.Equals(joinedRequestedAuthor));
+
+                        if (searchedAuthors.Any())
+                        {
+                            var subscribed = searchedAuthors.First();
+                            _subscribedAuthors.Delete(subscribed);
+                            _subscribedAuthors.Save();
+                            SendMessage(message.Chat.Id, $"{joinedRequestedAuthor} {Messages.RemovedFromFavoriteMessage}");
+                        }
+                        else
+                        {
+                            SendMessage(message.Chat.Id, $"{joinedRequestedAuthor} {Messages.NotFoundInFavoriteMessage}");
+                        }
+                    }
+                })
+                ,
                 _ => (Action)(() => ReplyUnknownAction(message.Chat.Id))
             };
 
