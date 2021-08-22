@@ -7,5 +7,7 @@ namespace StandupWatcher.DataAccess.Models
 	public sealed record Subscriber : Entity
 	{
 		public long ChatId { get; init; }
+
+		public string Username { get; init; }
 	}
 }
