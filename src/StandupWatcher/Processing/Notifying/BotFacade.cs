@@ -148,6 +148,7 @@ namespace StandupWatcher.Processing.Notifying
 			_subscribersRepository.Add(new Subscriber
 			{
 				ChatId = chatId,
+				Username = username,
 				CreationTimestamp = now,
 				ModificationTimestamp = now
 			});
