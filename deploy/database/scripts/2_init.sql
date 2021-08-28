@@ -23,6 +23,15 @@ CREATE TABLE public.subscribers (
 	modificationTimestamp TIMESTAMP NOT NULL
 );
 
+CREATE TABLE public.subscribedauthors (
+	chatid int8 NULL,
+	standupername varchar(32) NOT NULL,
+	id serial NOT NULL,
+	creationtimestamp timestamp NOT NULL DEFAULT now(),
+	modificationtimestamp timestamp NOT NULL DEFAULT now(),
+	CONSTRAINT subscribedauthors_pkey PRIMARY KEY (id)
+);
+
 ALTER TABLE public.events ALTER COLUMN creationTimestamp SET DEFAULT NOW();
 ALTER TABLE public.events ALTER COLUMN modificationTimestamp SET DEFAULT NOW();
 
