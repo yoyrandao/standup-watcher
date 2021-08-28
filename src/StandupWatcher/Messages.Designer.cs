@@ -79,6 +79,24 @@ namespace StandupWatcher {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Ни за кем не следишь.
+        /// </summary>
+        internal static string EmptyFollowingStandupersMessage {
+            get {
+                return ResourceManager.GetString("EmptyFollowingStandupersMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Следишь за.
+        /// </summary>
+        internal static string FollowingStandupersMessage {
+            get {
+                return ResourceManager.GetString("FollowingStandupersMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Привет! Новый ивент в StandupStore - &lt;b&gt;{0}&lt;/b&gt;.
         ///
         ///Дата: {1}
@@ -118,29 +136,7 @@ namespace StandupWatcher {
                 return ResourceManager.GetString("RemovedFromFavoriteMessage", resourceCulture);
             }
         }
-
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на Список отслеживаемых стендаперов.
-        /// </summary>
-        internal static string FollowingStandupersMessage
-        {
-            get
-            {
-                return ResourceManager.GetString("FollowingStandupersMessage", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на список отслеживаемых стендаперов пуст.
-        /// </summary>
-        internal static string EmptyFollowingStandupersMessage
-        {
-            get
-            {
-                return ResourceManager.GetString("EmptyFollowingStandupersMessage", resourceCulture);
-            }
-        }
-
+        
         /// <summary>
         ///   Ищет локализованную строку, похожую на Подписан.
         /// </summary>

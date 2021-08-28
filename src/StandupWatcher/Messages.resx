@@ -149,4 +149,10 @@
   <data name="EmptyAddedToFavoriteMessage" xml:space="preserve">
     <value>Не указан автор</value>
   </data>
+  <data name="EmptyFollowingStandupersMessage" xml:space="preserve">
+    <value>Ни за кем не следишь</value>
+  </data>
+  <data name="FollowingStandupersMessage" xml:space="preserve">
+    <value>Следишь за</value>
+  </data>
 </root>

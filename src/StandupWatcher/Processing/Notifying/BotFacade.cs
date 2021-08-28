@@ -116,8 +116,9 @@ namespace StandupWatcher.Processing.Notifying
 
 					if (isSubscribed)
 					{
-						var requestedAuthor = message.Text.Split("/add").ToList().FirstOrDefault().Trim();
-						if (requestedAuthor is not null)
+						var requestedAuthor = message.Text.Split("/add").ToList().LastOrDefault().Trim();
+
+						if (!string.IsNullOrWhiteSpace(requestedAuthor))
 						{
 							_subscribedAuthorsRepository.Add(CreateNewAuthor(message.Chat.Id, requestedAuthor));
 							_subscribedAuthorsRepository.Save();
@@ -137,9 +138,9 @@ namespace StandupWatcher.Processing.Notifying
 
 					if (isSubscribed)
 					{
-						var requestedAuthor = message.Text.Split("/remove").ToList().FirstOrDefault().Trim();
+						var requestedAuthor = message.Text.Split("/remove").ToList().LastOrDefault().Trim();
 
-						if (requestedAuthor is not null)
+						if (!string.IsNullOrWhiteSpace(requestedAuthor))
 						{
 							var searchedAuthors = _subscribedAuthorsRepository.Get(x => x.ChatId.Equals(message.Chat.Id) && x.StanduperName.Equals(requestedAuthor));
 
