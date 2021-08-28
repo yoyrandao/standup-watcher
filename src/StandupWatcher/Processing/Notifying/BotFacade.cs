@@ -102,11 +102,17 @@ namespace StandupWatcher.Processing.Notifying
                     if (isSubscribed)
                     {
                         var requestedAuthor = message.Text.Split("/add").ToList().FirstOrDefault().Trim();
+                        if (requestedAuthor is not null)
+                        {
+                            _subscribedAuthorsRepository.Add(newAuthor(message.Chat.Id, requestedAuthor));
+                            _subscribedAuthorsRepository.Save();
 
-                        _subscribedAuthorsRepository.Add(newAuthor(message.Chat.Id, requestedAuthor));
-                        _subscribedAuthorsRepository.Save();
-
-                        SendMessage(message.Chat.Id, $"{requestedAuthor} {Messages.AddedToFavoriteMessage}");
+                            SendMessage(message.Chat.Id, $"{requestedAuthor} {Messages.AddedToFavoriteMessage}");
+                        }
+                        else
+                        {
+                            SendMessage(message.Chat.Id, $"{requestedAuthor} {Messages.EmptyAddedToFavoriteMessage}");
+                        }
                     }
                 })
                 ,
@@ -116,22 +122,49 @@ namespace StandupWatcher.Processing.Notifying
 
                     if (isSubscribed)
                     {
-                        var requestedAuthor = message.Text.Split(' ').ToList();
-                        requestedAuthor = requestedAuthor.Skip(1).ToList();
+                        var requestedAuthor = message.Text.Split("/remove").ToList().FirstOrDefault().Trim();
 
-                        var joinedRequestedAuthor = string.Join(' ', requestedAuthor);
-                        var searchedAuthors = _subscribedAuthorsRepository.Get(x => x.ChatId.Equals(message.Chat.Id) && x.StanduperName.Equals(joinedRequestedAuthor));
-
-                        if (searchedAuthors.Any())
+                        if (requestedAuthor is not null)
                         {
-                            var subscribed = searchedAuthors.First();
-                            _subscribedAuthorsRepository.Delete(subscribed);
-                            _subscribedAuthorsRepository.Save();
-                            SendMessage(message.Chat.Id, $"{joinedRequestedAuthor} {Messages.RemovedFromFavoriteMessage}");
+                            var searchedAuthors = _subscribedAuthorsRepository.Get(x => x.ChatId.Equals(message.Chat.Id) && x.StanduperName.Equals(requestedAuthor));
+
+                            if (searchedAuthors.Any())
+                            {
+                                var subscribed = searchedAuthors.First();
+                                _subscribedAuthorsRepository.Delete(subscribed);
+                                _subscribedAuthorsRepository.Save();
+                                SendMessage(message.Chat.Id, $"{requestedAuthor} {Messages.RemovedFromFavoriteMessage}");
+                            }
+                            else
+                            {
+                                SendMessage(message.Chat.Id, $"{requestedAuthor} {Messages.NotFoundInFavoriteMessage}");
+                            }
                         }
                         else
                         {
-                            SendMessage(message.Chat.Id, $"{joinedRequestedAuthor} {Messages.NotFoundInFavoriteMessage}");
+                            SendMessage(message.Chat.Id, Messages.EmptyAddedToFavoriteMessage);
+                        }
+                    }
+                })
+                ,
+                "/list" => (Action)(() =>
+                {
+                    var isSubscribed = IsSubscribed(message.Chat.Id);
+
+                    if (isSubscribed)
+                    {
+                        var searchedAuthors = _subscribedAuthorsRepository.Get(x => x.ChatId.Equals(message.Chat.Id));
+
+                        if (searchedAuthors.Any())
+                        {
+                            var subscribedAuthors = searchedAuthors.Select(x => x.StanduperName);
+                            var joinedSubscribedAuthors = string.Join(", ", subscribedAuthors);
+
+                            SendMessage(message.Chat.Id, $"{Messages.FollowingStandupersMessage} : {joinedSubscribedAuthors}");
+                        }
+                        else
+                        {
+                            SendMessage(message.Chat.Id, $"{Messages.EmptyFollowingStandupersMessage}");
                         }
                     }
                 })

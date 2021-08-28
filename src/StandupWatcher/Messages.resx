@@ -146,4 +146,7 @@
   <data name="RemovedFromFavoriteMessage" xml:space="preserve">
     <value>Удален из списка отслеживаемых стендаперов</value>
   </data>
+  <data name="EmptyAddedToFavoriteMessage" xml:space="preserve">
+    <value>Не указан автор</value>
+  </data>
 </root>
