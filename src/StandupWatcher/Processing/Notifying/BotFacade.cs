@@ -119,7 +119,7 @@ namespace StandupWatcher.Processing.Notifying
 						var requestedAuthor = message.Text.Split("/add").ToList().FirstOrDefault().Trim();
 						if (requestedAuthor is not null)
 						{
-							_subscribedAuthorsRepository.Add(newAuthor(message.Chat.Id, requestedAuthor));
+							_subscribedAuthorsRepository.Add(CreateNewAuthor(message.Chat.Id, requestedAuthor));
 							_subscribedAuthorsRepository.Save();
 
 							SendMessage(message.Chat.Id, $"{requestedAuthor} {Messages.AddedToFavoriteMessage}");
@@ -197,17 +197,17 @@ namespace StandupWatcher.Processing.Notifying
 			}
 		}
 
-		private SubscribedAuthors newAuthor(long chatId, string standuperName)
+		private static SubscribedAuthors CreateNewAuthor(long chatId, string standuperName)
 		{
-			var author = new SubscribedAuthors()
+			var creationDate = DateTime.Now;
+			
+			return new SubscribedAuthors()
 			{
-				CreationTimestamp = DateTime.Now,
-				ModificationTimestamp = DateTime.Now,
+				CreationTimestamp = creationDate,
+				ModificationTimestamp = creationDate,
 				ChatId = chatId,
 				StanduperName = standuperName
 			};
-
-			return author;
 		}
 		private bool IsSubscribed(long chatId)
 		{
