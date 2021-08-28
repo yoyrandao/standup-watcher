@@ -57,17 +57,32 @@ namespace StandupWatcher.Processing.Notifying
 			};
 
 			_logger.LogError(errorMessage);
+
 			return Task.CompletedTask;
 		}
 
 		public void SendMessage(long chatId, string message)
 		{
-			_client.SendTextMessageAsync(chatId, message, ParseMode.Html).GetAwaiter().GetResult();
+			try
+			{
+				_client.SendTextMessageAsync(chatId, message, ParseMode.Html).GetAwaiter().GetResult();
+			}
+			catch (Exception e)
+			{
+				HandleError(_client, e, CancellationToken.None).GetAwaiter().GetResult();
+			}
 		}
 
 		public void SendMessageWithPhoto(long chatId, string imageUrl, string message)
 		{
-			_client.SendPhotoAsync(chatId, imageUrl, message, ParseMode.Html).GetAwaiter().GetResult();
+			try
+			{
+				_client.SendPhotoAsync(chatId, imageUrl, message, ParseMode.Html).GetAwaiter().GetResult();
+			}
+			catch (Exception e)
+			{
+				HandleError(_client, e, CancellationToken.None).GetAwaiter().GetResult();
+			}
 		}
 
 		#endregion
@@ -78,7 +93,7 @@ namespace StandupWatcher.Processing.Notifying
 			{
 				"/start" => () =>
 				{
-					RegisterSubscriber(message.Chat.Id);
+					RegisterSubscriber(message.Chat.Id, message.Chat.Username);
 					SendMessage(message.Chat.Id, Messages.SuccessfulOperationMessage);
 				}
 				,
@@ -212,7 +227,7 @@ namespace StandupWatcher.Processing.Notifying
 			_subscribersRepository.Save();
 		}
 
-		private void RegisterSubscriber(long chatId)
+		private void RegisterSubscriber(long chatId, string username)
 		{
 			if (IsSubscribed(chatId))
 				return;
@@ -222,6 +237,7 @@ namespace StandupWatcher.Processing.Notifying
 			_subscribersRepository.Add(new Subscriber
 			{
 				ChatId = chatId,
+				Username = username,
 				CreationTimestamp = now,
 				ModificationTimestamp = now
 			});
@@ -232,6 +248,7 @@ namespace StandupWatcher.Processing.Notifying
 		private Task OnUnknownUpdateRecieved()
 		{
 			_logger.LogWarning("Unknown update recieved.");
+
 			return Task.CompletedTask;
 		}
 

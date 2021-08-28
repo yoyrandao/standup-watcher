@@ -2,6 +2,10 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StandupWatcher", "StandupWatcher\StandupWatcher.csproj", "{09B6365F-1856-419C-8117-4B67A688EA6C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{8C149BA8-EAEA-434A-AD86-30B42DC77357}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UsernameFiller", "UsernameFiller\UsernameFiller.csproj", "{38FC2014-4405-4EA9-8909-AEA6086C8515}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +16,12 @@ Global
 		{09B6365F-1856-419C-8117-4B67A688EA6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{09B6365F-1856-419C-8117-4B67A688EA6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{09B6365F-1856-419C-8117-4B67A688EA6C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38FC2014-4405-4EA9-8909-AEA6086C8515}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38FC2014-4405-4EA9-8909-AEA6086C8515}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38FC2014-4405-4EA9-8909-AEA6086C8515}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38FC2014-4405-4EA9-8909-AEA6086C8515}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{38FC2014-4405-4EA9-8909-AEA6086C8515} = {8C149BA8-EAEA-434A-AD86-30B42DC77357}
 	EndGlobalSection
 EndGlobal

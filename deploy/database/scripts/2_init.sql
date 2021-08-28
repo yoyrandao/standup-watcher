@@ -18,6 +18,7 @@ CREATE TABLE public.notifications (
 CREATE TABLE public.subscribers (
 	id SERIAL PRIMARY KEY,
 	chatId BIGINT NOT NULL,
+	username VARCHAR(255) NOT NULL,
 	creationTimestamp TIMESTAMP NOT NULL,
 	modificationTimestamp TIMESTAMP NOT NULL
 );
