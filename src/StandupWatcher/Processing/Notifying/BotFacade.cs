@@ -18,12 +18,12 @@ namespace StandupWatcher.Processing.Notifying
 {
     public class BotFacade : IBotFacade
     {
-        public BotFacade(ITelegramBotClient client, IGenericRepository<Subscriber> subscribersRepository, ILogger<BotFacade> logger, IGenericRepository<SubscribedAuthors> subscribedAuthors)
+        public BotFacade(ITelegramBotClient client, IGenericRepository<Subscriber> subscribersRepository, ILogger<BotFacade> logger, IGenericRepository<SubscribedAuthors> subscribedAuthorsRepository)
         {
             _client = client;
             _logger = logger;
             _subscribersRepository = subscribersRepository;
-            _subscribedAuthors = subscribedAuthors;
+            _subscribedAuthorsRepository = subscribedAuthorsRepository;
         }
 
         #region Implementation of IBotFacade
@@ -101,14 +101,12 @@ namespace StandupWatcher.Processing.Notifying
 
                     if (isSubscribed)
                     {
-                        var requestedAuthor = message.Text.Split(' ').ToList();
-                        requestedAuthor = requestedAuthor.Skip(1).ToList();
+                        var requestedAuthor = message.Text.Split("/add").ToList().FirstOrDefault().Trim();
 
-                        var joinedRequestedAuthor = string.Join(' ', requestedAuthor);
-                        _subscribedAuthors.Add(newAuthor(message.Chat.Id, joinedRequestedAuthor));
-                        _subscribedAuthors.Save();
+                        _subscribedAuthorsRepository.Add(newAuthor(message.Chat.Id, requestedAuthor));
+                        _subscribedAuthorsRepository.Save();
 
-                        SendMessage(message.Chat.Id, $"{joinedRequestedAuthor} {Messages.AddedToFavoriteMessage}");
+                        SendMessage(message.Chat.Id, $"{requestedAuthor} {Messages.AddedToFavoriteMessage}");
                     }
                 })
                 ,
@@ -122,13 +120,13 @@ namespace StandupWatcher.Processing.Notifying
                         requestedAuthor = requestedAuthor.Skip(1).ToList();
 
                         var joinedRequestedAuthor = string.Join(' ', requestedAuthor);
-                        var searchedAuthors = _subscribedAuthors.Get(x => x.ChatId.Equals(message.Chat.Id) && x.StanduperName.Equals(joinedRequestedAuthor));
+                        var searchedAuthors = _subscribedAuthorsRepository.Get(x => x.ChatId.Equals(message.Chat.Id) && x.StanduperName.Equals(joinedRequestedAuthor));
 
                         if (searchedAuthors.Any())
                         {
                             var subscribed = searchedAuthors.First();
-                            _subscribedAuthors.Delete(subscribed);
-                            _subscribedAuthors.Save();
+                            _subscribedAuthorsRepository.Delete(subscribed);
+                            _subscribedAuthorsRepository.Save();
                             SendMessage(message.Chat.Id, $"{joinedRequestedAuthor} {Messages.RemovedFromFavoriteMessage}");
                         }
                         else
@@ -207,6 +205,6 @@ namespace StandupWatcher.Processing.Notifying
         private readonly ITelegramBotClient _client;
         private readonly IGenericRepository<Subscriber> _subscribersRepository;
         private readonly ILogger<BotFacade> _logger;
-        private readonly IGenericRepository<SubscribedAuthors> _subscribedAuthors;
+        private readonly IGenericRepository<SubscribedAuthors> _subscribedAuthorsRepository;
     }
 }
