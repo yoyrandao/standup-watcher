@@ -18,11 +18,12 @@ namespace StandupWatcher.Processing.Notifying
 {
 	public class BotFacade : IBotFacade
 	{
-		public BotFacade(ITelegramBotClient client, IGenericRepository<Subscriber> subscribersRepository, ILogger<BotFacade> logger)
+		public BotFacade(ITelegramBotClient client, IGenericRepository<Subscriber> subscribersRepository, ILogger<BotFacade> logger, IGenericRepository<SubscribedAuthors> subscribedAuthorsRepository)
 		{
 			_client = client;
 			_logger = logger;
 			_subscribersRepository = subscribersRepository;
+			_subscribedAuthorsRepository = subscribedAuthorsRepository;
 		}
 
 		#region Implementation of IBotFacade
@@ -94,20 +95,97 @@ namespace StandupWatcher.Processing.Notifying
 				{
 					RegisterSubscriber(message.Chat.Id, message.Chat.Username);
 					SendMessage(message.Chat.Id, Messages.SuccessfulOperationMessage);
-				},
+				}
+				,
 				"/stop" => () =>
 				{
 					DeleteSubscriber(message.Chat.Id);
 					SendMessage(message.Chat.Id, Messages.SuccessfulOperationMessage);
-				},
+				}
+				,
 				"/status" => () =>
 				{
 					var isSubscribed = IsSubscribed(message.Chat.Id);
 
 					SendMessage(message.Chat.Id, isSubscribed ? Messages.SubscribedStatusMessage : Messages.NotSubscribedStatusMessage);
-				},
+				}
+				,
+				"/add" => (Action)(() =>
+				{
+					var isSubscribed = IsSubscribed(message.Chat.Id);
 
-				_ => (Action) (() => ReplyUnknownAction(message.Chat.Id))
+					if (isSubscribed)
+					{
+						var requestedAuthor = message.Text.Split("/add").ToList().LastOrDefault().Trim();
+
+						if (!string.IsNullOrWhiteSpace(requestedAuthor))
+						{
+							_subscribedAuthorsRepository.Add(CreateNewAuthor(message.Chat.Id, requestedAuthor));
+							_subscribedAuthorsRepository.Save();
+
+							SendMessage(message.Chat.Id, $"{requestedAuthor} {Messages.AddedToFavoriteMessage}");
+						}
+						else
+						{
+							SendMessage(message.Chat.Id, $"{requestedAuthor} {Messages.EmptyAddedToFavoriteMessage}");
+						}
+					}
+				})
+				,
+				"/remove" => (Action)(() =>
+				{
+					var isSubscribed = IsSubscribed(message.Chat.Id);
+
+					if (isSubscribed)
+					{
+						var requestedAuthor = message.Text.Split("/remove").ToList().LastOrDefault().Trim();
+
+						if (!string.IsNullOrWhiteSpace(requestedAuthor))
+						{
+							var searchedAuthors = _subscribedAuthorsRepository.Get(x => x.ChatId.Equals(message.Chat.Id) && x.StanduperName.Equals(requestedAuthor));
+
+							if (searchedAuthors.Any())
+							{
+								var subscribed = searchedAuthors.First();
+								_subscribedAuthorsRepository.Delete(subscribed);
+								_subscribedAuthorsRepository.Save();
+								SendMessage(message.Chat.Id, $"{requestedAuthor} {Messages.RemovedFromFavoriteMessage}");
+							}
+							else
+							{
+								SendMessage(message.Chat.Id, $"{requestedAuthor} {Messages.NotFoundInFavoriteMessage}");
+							}
+						}
+						else
+						{
+							SendMessage(message.Chat.Id, Messages.EmptyAddedToFavoriteMessage);
+						}
+					}
+				})
+				,
+				"/list" => (Action)(() =>
+				{
+					var isSubscribed = IsSubscribed(message.Chat.Id);
+
+					if (isSubscribed)
+					{
+						var searchedAuthors = _subscribedAuthorsRepository.Get(x => x.ChatId.Equals(message.Chat.Id));
+
+						if (searchedAuthors.Any())
+						{
+							var subscribedAuthors = searchedAuthors.Select(x => x.StanduperName);
+							var joinedSubscribedAuthors = string.Join(", ", subscribedAuthors);
+
+							SendMessage(message.Chat.Id, $"{Messages.FollowingStandupersMessage} : {joinedSubscribedAuthors}");
+						}
+						else
+						{
+							SendMessage(message.Chat.Id, $"{Messages.EmptyFollowingStandupersMessage}");
+						}
+					}
+				})
+				,
+				_ => (Action)(() => ReplyUnknownAction(message.Chat.Id))
 			};
 
 			try
@@ -120,6 +198,18 @@ namespace StandupWatcher.Processing.Notifying
 			}
 		}
 
+		private static SubscribedAuthors CreateNewAuthor(long chatId, string standuperName)
+		{
+			var creationDate = DateTime.Now;
+			
+			return new SubscribedAuthors()
+			{
+				CreationTimestamp = creationDate,
+				ModificationTimestamp = creationDate,
+				ChatId = chatId,
+				StanduperName = standuperName
+			};
+		}
 		private bool IsSubscribed(long chatId)
 		{
 			return _subscribersRepository.Get(x => x.ChatId.Equals(chatId)).Any();
@@ -166,5 +256,6 @@ namespace StandupWatcher.Processing.Notifying
 		private readonly ITelegramBotClient _client;
 		private readonly IGenericRepository<Subscriber> _subscribersRepository;
 		private readonly ILogger<BotFacade> _logger;
+		private readonly IGenericRepository<SubscribedAuthors> _subscribedAuthorsRepository;
 	}
 }
